@@ -8,7 +8,7 @@ const helmet = require("helmet");
 const port = process.env.PORT || 5000;
 
 //route import
-const Router = require("./routes/Router");
+const Router_v1 = require("./routes/Router");
 
 const app = express();
 
@@ -24,7 +24,7 @@ connectDB();
 // using static files
 app.use("/static", express.static(path.join(__dirname, "public")));
 
-app.use("/api/v1", Router);
+app.use("/api/v1", Router_v1);
 
 app.get("/", (req, res) => {
     res.send("Welcome to Study Planner Api Server.");
