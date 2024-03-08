@@ -11,4 +11,11 @@ router.post(
     ScheduleController.createInitialWeeklySchedule
 );
 
+router.put(
+    "/initial/update",
+    checkUserToken,
+    scheduleValidation.createInitialWeeklySchedule,
+    ScheduleController.updateWeeklySchedule
+);
+
 module.exports = router;

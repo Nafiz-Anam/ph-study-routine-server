@@ -18,6 +18,18 @@ const ScheduleService = {
         await newSchedule.save();
         return newSchedule;
     },
+
+    updateWeeklySchedule: async (userId, weeklySchedule) => {
+        const existingSchedule = await UserSchedule.findOne({ userId });
+
+        if (!existingSchedule) {
+            throw new Error("Schedule not found for this user.");
+        }
+
+        existingSchedule.weeklySchedule = weeklySchedule;
+        await existingSchedule.save();
+        return existingSchedule;
+    },
 };
 
 module.exports = ScheduleService;
