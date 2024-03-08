@@ -39,13 +39,8 @@ const fileFilter = (req, file, cb) => {
 
 let ProfileUploader = multer({
     storage: fileStorage,
-    limits: { fileSize: "10mb" },
+    limits: { fileSize: 1024 * 1024 * 10 },
     fileFilter: fileFilter,
-}).fields([
-    {
-        name: "profile_img",
-        maxCount: 1,
-    },
-]);
+}).single("profile_img");
 
 module.exports = ProfileUploader;

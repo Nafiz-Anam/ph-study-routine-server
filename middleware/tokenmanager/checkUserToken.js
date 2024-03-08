@@ -24,7 +24,7 @@ module.exports = function AuthenticateAccessToken(req, res, next) {
                         error: "Unable To Validate Token",
                     });
                 }
-            } else if (user.type !== "user") {
+            } else if (user.role !== "student") {
                 res.status(403).json({
                     status: false,
                     error: "Forbidden access to this route.",
