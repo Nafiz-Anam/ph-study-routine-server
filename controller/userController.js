@@ -44,6 +44,21 @@ var UserController = {
             res.status(400).json({ message: error.message });
         }
     },
+
+    addUserNeeds: async (req, res, next) => {
+        try {
+            const { userId } = req.user;
+            const { needs } = req.body;
+
+            await UserService.addUserNeeds(userId, needs);
+
+            res.status(201).json({
+                message: "User needs added successfully.",
+            });
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    },
 };
 
 module.exports = UserController;

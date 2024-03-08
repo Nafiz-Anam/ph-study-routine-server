@@ -7,5 +7,6 @@ const ProfileUploader = require("../../uploads/ProfileUploader");
 // user routes
 router.put("/update", checkUserToken, ProfileUploader, UserController.update);
 router.get("/profile", checkPermission, UserController.details);
+router.post("/needs", checkUserToken, UserController.addUserNeeds);
 
 module.exports = router;

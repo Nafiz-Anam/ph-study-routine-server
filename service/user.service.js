@@ -1,4 +1,5 @@
 const User = require("../schema/user.schema");
+const userNeed = require("../schema/userNeed.schema");
 
 const UserService = {
     update: async (userId, updateData) => {
@@ -29,6 +30,15 @@ const UserService = {
         } catch (error) {
             throw error;
         }
+    },
+
+    addUserNeeds: async (userId, needs) => {
+        const userNeeds = new userNeed({
+            userId,
+            needs,
+        });
+
+        await userNeeds.save();
     },
 };
 
