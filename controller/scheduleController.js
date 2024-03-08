@@ -25,6 +25,25 @@ var ScheduleController = {
         }
     },
 
+    getWeeklySchedule: async (req, res, next) => {
+        try {
+            const userId = req.user.id;
+
+            const schedule = await ScheduleService.getWeeklyScheduleByUserId(
+                userId
+            );
+            if (!schedule) {
+                return res
+                    .status(404)
+                    .json({ message: "Schedule not found for this user." });
+            }
+
+            res.status(200).json(schedule);
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    },
+
     updateWeeklySchedule: async (req, res, next) => {
         try {
             const userId = req.user.id;

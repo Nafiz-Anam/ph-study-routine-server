@@ -19,6 +19,11 @@ const ScheduleService = {
         return newSchedule;
     },
 
+    getWeeklyScheduleByUserId: async (userId) => {
+        const schedule = await UserSchedule.findOne({ userId });
+        return schedule;
+    },
+
     updateWeeklySchedule: async (userId, weeklySchedule) => {
         const existingSchedule = await UserSchedule.findOne({ userId });
 
