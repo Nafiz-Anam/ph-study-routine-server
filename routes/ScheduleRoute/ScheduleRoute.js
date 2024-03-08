@@ -11,6 +11,8 @@ router.post(
     ScheduleController.createInitialWeeklySchedule
 );
 
+router.get("/initial", checkUserToken, ScheduleController.getWeeklySchedule);
+
 router.put(
     "/initial/update",
     checkUserToken,
