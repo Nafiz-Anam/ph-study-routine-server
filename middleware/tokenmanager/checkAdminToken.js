@@ -38,7 +38,7 @@ module.exports = async function AuthenticateAccessToken(req, res, next) {
                     error: "Unable To Validate Token",
                 });
             }
-        } else if (user.type !== "admin") {
+        } else if (user.role !== "admin") {
             res.status(403).json({
                 status: false,
                 error: "Forbidden access to this route.",
