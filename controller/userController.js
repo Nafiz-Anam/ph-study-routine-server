@@ -10,7 +10,15 @@ var UserController = {
                 req.body;
             const userId = req.user.id;
 
-            console.log(req.all_files.profile_img);
+            if (!req.file && !req.all_files?.profile_img) {
+                return res
+                    .status(400)
+                    .json({ message: "Profile image is required." });
+            }
+
+            const profilePicturePath = req?.all_files?.profile_img
+                ? `${static_url}user/${req.all_files.profile_img}`
+                : "";
 
             // Update the user profile
             await UserService.update(userId, {
@@ -19,8 +27,7 @@ var UserController = {
                 mobile,
                 education_level,
                 institution,
-                profilePicture:
-                    static_url + "user/" + req?.all_files?.profile_img || "",
+                profilePicture: profilePicturePath,
             });
 
             res.status(201).json({
@@ -33,7 +40,14 @@ var UserController = {
 
     details: async (req, res, next) => {
         try {
-            const userId = req.user.id;
+            const userId = req.body.userId || req.user.id;
+
+            if (!userId) {
+                return res
+                    .status(400)
+                    .json({ message: "User ID is required." });
+            }
+
             const userDetails = await UserService.details(userId);
 
             res.json({
@@ -65,7 +79,9 @@ var UserController = {
     generateStudyPlanForUser: async (req, res, next) => {
         try {
             const userId = req.user.id;
-            const studyPlan = await UserService.generateStudyPlanForUser(userId);
+            const studyPlan = await UserService.generateStudyPlanForUser(
+                userId
+            );
 
             res.json({ studyPlan });
         } catch (error) {
