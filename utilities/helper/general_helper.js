@@ -139,6 +139,18 @@ function tryAllocateTaskToDay(task, day, availableTimeSlots, studyPlan) {
     return false; // Task not allocated
 }
 
+function initializeTasksPerDayCount() {
+    return {
+        Monday: 0,
+        Tuesday: 0,
+        Wednesday: 0,
+        Thursday: 0,
+        Friday: 0,
+        Saturday: 0,
+        Sunday: 0,
+    };
+}
+
 // const subtractTimeSlots = (availableSlots, blockedSlots) => {
 //     blockedSlots.forEach((blocked) => {
 //         const blockedStart = timeToMinutes(blocked.startTime);
@@ -264,54 +276,50 @@ var helpers = {
 
     sortTasksByPriorityAndDuration: (tasks) => {
         const priorityOrder = { high: 1, medium: 2, low: 3 };
-        return tasks.sort(
-            (a, b) =>
-                priorityOrder[a.priority] - priorityOrder[b.priority] ||
-                a.timeNeeded - b.timeNeeded
-        );
+        return tasks.sort((a, b) => {
+            const priorityDifference =
+                priorityOrder[a.priority] - priorityOrder[b.priority];
+            if (priorityDifference === 0) {
+                return a.timeNeeded - b.timeNeeded; // Sort by duration if priorities are the same
+            }
+            return priorityDifference;
+        });
     },
 
-    allocateTasksToTimeSlots: (
-        availableTimeSlots,
-        sortedTasks,
-        maxTasksPerDay = 2
-    ) => {
+    allocateTasksToTimeSlots: (availableTimeSlots, sortedTasks) => {
         let studyPlan = initializeStudyPlanWithEmptyDaysAndUnallocatedSlot();
-        let tasksToAllocate = [...sortedTasks]; // Clone to manipulate list
+        // let sortedTasks = sortTasks(tasks);
 
-        // Attempt to allocate each task respecting maxTasksPerDay initially
-        for (let pass = 1; pass <= 2; pass++) {
-            // Two passes: initial and adjustment if needed
-            tasksToAllocate = tasksToAllocate.filter((task) => {
-                let allocated = false;
+        // Track number of tasks assigned per day to ensure even distribution
+        let tasksPerDayCount = initializeTasksPerDayCount();
 
-                for (let day of Object.keys(availableTimeSlots)) {
-                    if (allocated) break; // Break if already allocated in this pass
-                    if (
-                        studyPlan[day].length >=
-                        (pass === 1 ? maxTasksPerDay : Infinity)
-                    )
-                        continue; // Respect maxTasksPerDay in the first pass only
+        sortedTasks.forEach((task) => {
+            let daysTried = 0;
+            let allocated = false;
 
-                    // Try to allocate task to this day
-                    allocated = tryAllocateTaskToDay(
-                        task,
-                        day,
-                        availableTimeSlots,
-                        studyPlan
-                    );
+            while (!allocated && daysTried < 7) {
+                // Find the day with the least number of tasks that hasn't reached its limit
+                let [dayToAllocate] = Object.entries(tasksPerDayCount).sort(
+                    ([, a], [, b]) => a - b
+                )[daysTried];
+
+                allocated = tryAllocateTaskToDay(
+                    task,
+                    dayToAllocate,
+                    availableTimeSlots,
+                    studyPlan
+                );
+                if (allocated) {
+                    tasksPerDayCount[dayToAllocate]++;
+                } else {
+                    daysTried++;
                 }
+            }
 
-                return !allocated; // Return tasks that were not allocated for potential next pass
-            });
-
-            if (pass === 1 && tasksToAllocate.length === 0) break; // If all tasks are allocated in the first pass, no need for a second pass
-        }
-
-        // Any tasks that couldn't be allocated even after adjusting for maxTasksPerDay are added to unallocated
-        tasksToAllocate.forEach((task) =>
-            studyPlan.unallocatedTasks.push(task)
-        );
+            if (!allocated) {
+                studyPlan.unallocatedTasks.push(task);
+            }
+        });
 
         return studyPlan;
     },
