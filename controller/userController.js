@@ -45,18 +45,34 @@ var UserController = {
         }
     },
 
-    addUserNeeds: async (req, res, next) => {
+    addNeeds: async (req, res, next) => {
         try {
-            const { userId } = req.user;
+            const userId = req.user.id;
             const { needs } = req.body;
 
-            await UserService.addUserNeeds(userId, needs);
+            if (!needs || needs.length === 0) {
+                return res.status(400).json({ message: "Needs are required." });
+            }
 
-            res.status(201).json({
-                message: "User needs added successfully.",
-            });
+            const newNeeds = await UserService.addUserNeeds(userId, needs);
+            console.log("newNeeds", newNeeds);
+            res.status(201).json(newNeeds);
         } catch (error) {
             res.status(400).json({ message: error.message });
+        }
+    },
+
+    generateStudyPlanForUser: async (req, res, next) => {
+        try {
+            const userId = req.user.id;
+            const studyPlan = await UserService.generateStudyPlanForUser(userId);
+
+            res.json({ studyPlan });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                message: "Failed to generate study plan.",
+            });
         }
     },
 };
