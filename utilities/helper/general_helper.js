@@ -122,6 +122,23 @@ function initializeStudyPlanWithEmptyDaysAndUnallocatedSlot() {
     return studyPlan;
 }
 
+function tryAllocateTaskToDay(task, day, availableTimeSlots, studyPlan) {
+    for (let i = 0; i < availableTimeSlots[day].length; i++) {
+        const slot = availableTimeSlots[day][i];
+        const slotDuration = calculateDurationInMinutes(slot.start, slot.end);
+        const neededDuration = task.timeNeeded + 15; // Include 15-minute break
+
+        if (slotDuration >= neededDuration) {
+            const endTime = incrementTimeByMinutes(slot.start, task.timeNeeded);
+            studyPlan[day].push({ ...task, startTime: slot.start, endTime });
+            // Adjust slot for next potential task
+            slot.start = incrementTimeByMinutes(endTime, 15); // Move start time after break
+            return true; // Task allocated
+        }
+    }
+    return false; // Task not allocated
+}
+
 // const subtractTimeSlots = (availableSlots, blockedSlots) => {
 //     blockedSlots.forEach((blocked) => {
 //         const blockedStart = timeToMinutes(blocked.startTime);
@@ -254,63 +271,47 @@ var helpers = {
         );
     },
 
-    allocateTasksToTimeSlots: (availableTimeSlots, tasks) => {
+    allocateTasksToTimeSlots: (
+        availableTimeSlots,
+        sortedTasks,
+        maxTasksPerDay = 2
+    ) => {
         let studyPlan = initializeStudyPlanWithEmptyDaysAndUnallocatedSlot();
+        let tasksToAllocate = [...sortedTasks]; // Clone to manipulate list
 
-        tasks.forEach((task) => {
-            if (task.scheduled) return; // Skip already scheduled tasks
+        // Attempt to allocate each task respecting maxTasksPerDay initially
+        for (let pass = 1; pass <= 2; pass++) {
+            // Two passes: initial and adjustment if needed
+            tasksToAllocate = tasksToAllocate.filter((task) => {
+                let allocated = false;
 
-            let foundSlot = false; // Track if the task has been allocated
+                for (let day of Object.keys(availableTimeSlots)) {
+                    if (allocated) break; // Break if already allocated in this pass
+                    if (
+                        studyPlan[day].length >=
+                        (pass === 1 ? maxTasksPerDay : Infinity)
+                    )
+                        continue; // Respect maxTasksPerDay in the first pass only
 
-            for (let day in availableTimeSlots) {
-                if (foundSlot) break; // If task is already scheduled, skip to the next task
+                    // Try to allocate task to this day
+                    allocated = tryAllocateTaskToDay(
+                        task,
+                        day,
+                        availableTimeSlots,
+                        studyPlan
+                    );
+                }
 
-                availableTimeSlots[day] = availableTimeSlots[day].reduce(
-                    (acc, slot) => {
-                        const slotDuration = calculateDurationInMinutes(
-                            slot.start,
-                            slot.end
-                        );
+                return !allocated; // Return tasks that were not allocated for potential next pass
+            });
 
-                        if (!foundSlot && slotDuration >= task.timeNeeded) {
-                            studyPlan[day].push({
-                                ...task,
-                                startTime: slot.start,
-                                endTime: incrementTimeByMinutes(
-                                    slot.start,
-                                    task.timeNeeded
-                                ),
-                            });
+            if (pass === 1 && tasksToAllocate.length === 0) break; // If all tasks are allocated in the first pass, no need for a second pass
+        }
 
-                            const remainingDurationStart =
-                                incrementTimeByMinutes(
-                                    slot.start,
-                                    task.timeNeeded
-                                );
-                            if (remainingDurationStart !== slot.end) {
-                                acc.push({
-                                    start: remainingDurationStart,
-                                    end: slot.end,
-                                });
-                            }
-
-                            task.scheduled = true; // Mark task as scheduled
-                            foundSlot = true;
-                        } else {
-                            acc.push(slot); // Keep the slot as is if the task doesn't fit
-                        }
-
-                        return acc;
-                    },
-                    []
-                );
-            }
-
-            if (!foundSlot) {
-                // If task was not allocated, add it to the unallocatedTasks slot
-                studyPlan.unallocatedTasks.push(task);
-            }
-        });
+        // Any tasks that couldn't be allocated even after adjusting for maxTasksPerDay are added to unallocated
+        tasksToAllocate.forEach((task) =>
+            studyPlan.unallocatedTasks.push(task)
+        );
 
         return studyPlan;
     },
