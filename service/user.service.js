@@ -45,6 +45,18 @@ const UserService = {
         return saveNeeds;
     },
 
+    getNeedsByUserId: async (userId) => {
+        try {
+            const needs = await UserNeed.find({ userId });
+            if (!needs) {
+                throw new Error("No incomplete tasks found for this user.");
+            }
+            return needs;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     // generateStudyPlanForUser: async (userId, needs) => {
     //     const blockedTimeSlots = await UserSchedule.findOne({ userId }).lean();
     //     console.log("blockedTimeSlots =>", blockedTimeSlots);
@@ -85,7 +97,9 @@ const UserService = {
                 helpers.calculateAvailableTimeSlots(blockedTimeSlots);
 
             // Sort tasks by priority and duration
-            const sortedTasks = helpers.sortTasksByPriorityAndDuration(tasks[0].needs);
+            const sortedTasks = helpers.sortTasksByPriorityAndDuration(
+                tasks[0].needs
+            );
 
             // Allocate tasks to available time slots and generate the study plan
             const studyPlan = helpers.allocateTasksToTimeSlots(

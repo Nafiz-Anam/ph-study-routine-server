@@ -51,7 +51,6 @@ const userValidation = {
                 }),
         });
 
-        console.log(req.body);
         const { error } = updateProfileSchema.validate(req.body, {
             abortEarly: false,
         });

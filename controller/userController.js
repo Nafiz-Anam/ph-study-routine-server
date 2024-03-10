@@ -76,6 +76,24 @@ var UserController = {
         }
     },
 
+    incompleteTasks: async (req, res, next) => {
+        try {
+            const userId = req.user.id;
+
+            const incompleteTasks = await UserService.getNeedsByUserId(userId);
+
+            if (!incompleteTasks) {
+                return res.status(404).json({
+                    message: "No incomplete tasks found for this user.",
+                });
+            }
+
+            res.status(200).json(incompleteTasks);
+        } catch (error) {
+            res.status(400).send(error.message);
+        }
+    },
+
     generateStudyPlanForUser: async (req, res, next) => {
         try {
             const userId = req.user.id;

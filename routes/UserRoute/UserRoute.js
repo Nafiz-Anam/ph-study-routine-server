@@ -24,6 +24,12 @@ router.post(
 );
 
 router.get(
+    "/needs",
+    checkUserToken,
+    UserController.incompleteTasks
+);
+
+router.get(
     "/study-plan",
     checkUserToken,
     UserController.generateStudyPlanForUser
