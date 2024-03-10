@@ -3,6 +3,12 @@ const Joi = require("joi");
 const userValidation = {
     update: async (req, res, next) => {
         const updateProfileSchema = Joi.object({
+            profilePicture: Joi.alternatives()
+                .try(Joi.string().allow("", null), Joi.object().instance(File))
+                .optional()
+                .messages({
+                    "alternatives.types": `"Profile Picture" must be either a string or a file object.`,
+                }),
             f_name: Joi.string().min(1).max(50).required().messages({
                 "string.base": `"First Name" should be of type 'text'.`,
                 "string.empty": `"First Name" cannot be empty.`,

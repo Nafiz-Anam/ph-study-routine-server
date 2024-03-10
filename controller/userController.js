@@ -10,7 +10,11 @@ var UserController = {
                 req.body;
             const userId = req.user.id;
 
-            if (!req.file && !req.all_files?.profilePicture) {
+            if (
+                !req.file &&
+                !req.all_files?.profilePicture &&
+                !req.body.profilePicture
+            ) {
                 return res
                     .status(400)
                     .json({ message: "Profile image is required." });
@@ -20,15 +24,20 @@ var UserController = {
                 ? `${static_url}user/${req.all_files.profilePicture}`
                 : "";
 
-            // Update the user profile
-            await UserService.update(userId, {
+            let data = {
                 f_name,
                 l_name,
                 mobile,
                 education_level,
                 institution,
-                profilePicture: profilePicturePath,
-            });
+            };
+
+            if (req?.all_files && req?.all_files?.profilePicture) {
+                data.profilePicture = profilePicturePath;
+            }
+
+            // Update the user profile
+            await UserService.update(userId, data);
 
             res.status(201).json({
                 message: "Profile updated successfully",
