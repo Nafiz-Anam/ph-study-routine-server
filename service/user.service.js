@@ -45,37 +45,40 @@ const UserService = {
         return saveNeeds;
     },
 
-    getNeedsByUserId: async (userId) => {
+    addOrUpdateUserNeeds: async (userId, needs) => {
         try {
-            const needs = await UserNeed.find({ userId });
-            if (!needs) {
-                throw new Error("No incomplete tasks found for this user.");
+            const existingNeeds = await UserNeed.findOne({ userId });
+            if (existingNeeds) {
+                existingNeeds.needs = needs;
+                await existingNeeds.save();
+                return {
+                    message: "Needs updated successfully.",
+                    needs: existingNeeds.needs,
+                };
+            } else {
+                const newNeeds = new UserNeed({ userId, needs });
+                await newNeeds.save();
+                return {
+                    message: "Needs added successfully.",
+                    needs: newNeeds.needs,
+                };
             }
-            return needs;
         } catch (error) {
             throw error;
         }
     },
 
-    // generateStudyPlanForUser: async (userId, needs) => {
-    //     const blockedTimeSlots = await UserSchedule.findOne({ userId }).lean();
-    //     console.log("blockedTimeSlots =>", blockedTimeSlots);
-    //     const tasks = await UserNeed.find({ userId }).lean();
-    //     console.log("tasks =>", tasks);
-    //     const sortedTasks = helpers.sortTasksByPriorityAndDuration(
-    //         tasks?.needs
-    //     );
-    //     console.log("sortedTasks =>", sortedTasks);
-    //     const availableTimeSlots =
-    //         helpers.consolidateAvailableTime(blockedTimeSlots);
-    //     console.log("availableTimeSlots =>", availableTimeSlots);
-    //     const studyPlan = helpers.allocateTasksToTimeSlots(
-    //         availableTimeSlots,
-    //         sortedTasks
-    //     );
-
-    //     return studyPlan;
-    // },
+    getNeedsByUserId: async (userId) => {
+        try {
+            const needs = await UserNeed.find({ userId }).select("-__v");
+            if (!needs) {
+                throw new Error("Needs not found");
+            }
+            return needs[0];
+        } catch (error) {
+            throw error;
+        }
+    },
 
     generateStudyPlanForUser: async (userId, needs) => {
         try {
@@ -110,7 +113,7 @@ const UserService = {
             return studyPlan;
         } catch (error) {
             console.error("Failed to generate study plan:", error);
-            throw error; // Rethrow to handle in the controller
+            throw error;
         }
     },
 };

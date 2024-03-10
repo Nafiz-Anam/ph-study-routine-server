@@ -68,9 +68,11 @@ var UserController = {
                 return res.status(400).json({ message: "Needs are required." });
             }
 
-            const newNeeds = await UserService.addUserNeeds(userId, needs);
-            console.log("newNeeds", newNeeds);
-            res.status(201).json(newNeeds);
+            const result = await UserService.addOrUpdateUserNeeds(
+                userId,
+                needs
+            );
+            res.status(201).json(result);
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
