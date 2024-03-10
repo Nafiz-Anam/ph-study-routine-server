@@ -90,7 +90,6 @@ const UserService = {
             }
 
             const tasks = await UserNeed.find({ userId }).lean();
-            console.log(tasks);
             if (!tasks || tasks.length === 0) {
                 throw new Error("No study tasks found for the user");
             }

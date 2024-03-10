@@ -17,7 +17,6 @@ module.exports = function AuthenticateAccessToken(req, res, next) {
                         error: "Token Expired Please Login.",
                     });
                 } else {
-                    console.log(err);
                     res.status(500).json({
                         status: false,
                         error: "Unable To Validate Token",
