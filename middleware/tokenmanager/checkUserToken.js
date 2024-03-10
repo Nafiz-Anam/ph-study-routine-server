@@ -10,7 +10,6 @@ module.exports = function AuthenticateAccessToken(req, res, next) {
         });
     } else {
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            console.log("user", user);
             if (err) {
                 if (err.message === "jwt expired") {
                     res.status(401).json({
