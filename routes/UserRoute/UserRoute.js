@@ -9,8 +9,8 @@ const userValidation = require("../../middleware/validations/userValidation");
 router.put(
     "/update",
     checkUserToken,
-    userValidation.update,
     ProfileUploader,
+    userValidation.update,
     UserController.update
 );
 

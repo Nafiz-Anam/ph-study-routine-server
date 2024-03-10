@@ -17,6 +17,10 @@ const userValidation = {
                 "string.max": `"Last Name" should have a maximum length of 50.`,
                 "any.required": `"Last Name" is a required field.`,
             }),
+            gender: Joi.string().valid("male", "female", "other").messages({
+                "string.base": `"Gender" should be of type 'text'.`,
+                "any.only": `"Gender" should be either 'male', 'female', or 'other'.`,
+            }),
             mobile: Joi.string()
                 .pattern(new RegExp("^[0-9]{10,15}$"))
                 .required()
@@ -37,7 +41,7 @@ const userValidation = {
                 }),
             institution: Joi.string()
                 .min(1)
-                .max(100)
+                .max(250)
                 .optional()
                 .allow("", null)
                 .messages({
@@ -47,6 +51,7 @@ const userValidation = {
                 }),
         });
 
+        console.log(req.body);
         const { error } = updateProfileSchema.validate(req.body, {
             abortEarly: false,
         });

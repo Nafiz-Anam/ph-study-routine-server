@@ -41,6 +41,6 @@ let ProfileUploader = multer({
     storage: fileStorage,
     limits: { fileSize: 1024 * 1024 * 10 },
     fileFilter: fileFilter,
-}).single("profile_img");
+}).single("profilePicture");
 
 module.exports = ProfileUploader;

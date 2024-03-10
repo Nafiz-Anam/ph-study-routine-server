@@ -10,14 +10,14 @@ var UserController = {
                 req.body;
             const userId = req.user.id;
 
-            if (!req.file && !req.all_files?.profile_img) {
+            if (!req.file && !req.all_files?.profilePicture) {
                 return res
                     .status(400)
                     .json({ message: "Profile image is required." });
             }
 
-            const profilePicturePath = req?.all_files?.profile_img
-                ? `${static_url}user/${req.all_files.profile_img}`
+            const profilePicturePath = req?.all_files?.profilePicture
+                ? `${static_url}user/${req.all_files.profilePicture}`
                 : "";
 
             // Update the user profile
