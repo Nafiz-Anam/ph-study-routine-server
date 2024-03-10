@@ -3,21 +3,14 @@ const checkUserToken = require("../../middleware/tokenmanager/checkUserToken");
 const ScheduleController = require("../../controller/scheduleController");
 const scheduleValidation = require("../../middleware/validations/scheduleValidation");
 
-// user routes
+// schedule routes
 router.post(
     "/initial",
     checkUserToken,
     scheduleValidation.createInitialWeeklySchedule,
-    ScheduleController.createInitialWeeklySchedule
+    ScheduleController.createOrUpdateWeeklySchedule
 );
 
 router.get("/initial", checkUserToken, ScheduleController.getWeeklySchedule);
-
-router.put(
-    "/initial/update",
-    checkUserToken,
-    scheduleValidation.createInitialWeeklySchedule,
-    ScheduleController.updateWeeklySchedule
-);
 
 module.exports = router;

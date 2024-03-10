@@ -3,12 +3,12 @@ const Joi = require("joi");
 const authValidation = {
     register: async (req, res, next) => {
         const registerSchema = Joi.object({
-            name: Joi.string().required().min(3).max(50).messages({
-                "any.required": "Name is required",
-                "string.empty": "Name cannot be empty",
-                "string.min": "Name must be at least 3 characters long",
-                "string.max": "Name cannot exceed 50 characters",
-            }),
+            // name: Joi.string().required().min(3).max(50).messages({
+            //     "any.required": "Name is required",
+            //     "string.empty": "Name cannot be empty",
+            //     "string.min": "Name must be at least 3 characters long",
+            //     "string.max": "Name cannot exceed 50 characters",
+            // }),
             email: Joi.string().required().email().messages({
                 "any.required": "Email is required",
                 "string.email": "Email must be a valid email address",

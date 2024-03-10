@@ -1,12 +1,13 @@
+const UserSchedule = require("../schema/schedule.schema");
 const ScheduleService = require("../service/schedule.service");
 
 require("dotenv").config();
 
 var ScheduleController = {
-    createInitialWeeklySchedule: async (req, res, next) => {
+    createOrUpdateWeeklySchedule: async (req, res, next) => {
         try {
-            const userId = req.user.id;
-            const weeklySchedule = req.body.weeklySchedule;
+            const userId = req?.user?.id;
+            const weeklySchedule = req.body?.weeklySchedule;
 
             if (!weeklySchedule || weeklySchedule.length === 0) {
                 return res
@@ -14,12 +15,21 @@ var ScheduleController = {
                     .json({ message: "Weekly schedule data is required." });
             }
 
-            const newSchedule =
-                await ScheduleService.createInitialWeeklySchedule(
-                    userId,
-                    weeklySchedule
-                );
-            res.status(201).json(newSchedule);
+            let existingSchedule = await UserSchedule.findOne({ userId });
+
+            if (existingSchedule) {
+                existingSchedule.weeklySchedule = weeklySchedule;
+                await existingSchedule.save();
+                res.status(200).json(existingSchedule);
+            } else {
+                const newSchedule =
+                    await ScheduleService.createInitialWeeklySchedule(
+                        userId,
+                        weeklySchedule
+                    );
+
+                res.status(201).json(newSchedule);
+            }
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
@@ -39,27 +49,6 @@ var ScheduleController = {
             }
 
             res.status(200).json(schedule);
-        } catch (error) {
-            res.status(400).json({ message: error.message });
-        }
-    },
-
-    updateWeeklySchedule: async (req, res, next) => {
-        try {
-            const userId = req.user.id;
-            const weeklySchedule = req.body.weeklySchedule;
-
-            if (!weeklySchedule || weeklySchedule.length === 0) {
-                return res
-                    .status(400)
-                    .json({ message: "Weekly schedule data is required." });
-            }
-
-            const updatedSchedule = await ScheduleService.updateWeeklySchedule(
-                userId,
-                weeklySchedule
-            );
-            res.status(200).json(updatedSchedule);
         } catch (error) {
             res.status(400).json({ message: error.message });
         }

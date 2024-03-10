@@ -5,16 +5,14 @@ const generateAuthToken = require("../middleware/tokenmanager/token");
 var AuthController = {
     registration: async (req, res, next) => {
         try {
-            const { name, email, password } = req.body;
+            const { email, password } = req.body;
             const { user, token } = await AuthService.registerNewUser({
-                name,
                 email,
                 password,
             });
 
             const userResponse = {
                 id: user._id,
-                name: user.name,
                 email: user.email,
                 token,
             };
