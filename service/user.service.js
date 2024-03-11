@@ -85,6 +85,7 @@ const UserService = {
             const blockedTimeSlots = await UserSchedule.findOne({
                 userId,
             }).lean();
+            console.log(blockedTimeSlots);
             if (!blockedTimeSlots) {
                 throw new Error("User's schedule not found");
             }
@@ -108,6 +109,13 @@ const UserService = {
                 availableTimeSlots,
                 sortedTasks
             );
+
+            const freeTimeSlots = helpers.calculateFreeTimeSlots(
+                studyPlan,
+                blockedTimeSlots
+            );
+
+            studyPlan.freeTimeSlots = freeTimeSlots;
 
             return studyPlan;
         } catch (error) {

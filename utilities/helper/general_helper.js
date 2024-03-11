@@ -202,6 +202,64 @@ var helpers = {
 
         return studyPlan;
     },
+
+    calculateFreeTimeSlots: (studyPlan, blockedTimeSlotsDocument) => {
+        let freeTimeSlots = {};
+        const daysOfWeek = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ];
+
+        daysOfWeek.forEach((day) => {
+            // Extracting timeBlocks for the current day from the blockedTimeSlotsDocument
+            const blockedSlotsForDay =
+                blockedTimeSlotsDocument.weeklySchedule.find(
+                    (d) => d.day === day
+                )?.timeBlocks || [];
+            const daySchedule = studyPlan[day] || [];
+
+            // Merge blocked slots and allocated task times
+            let allSlots = [
+                ...blockedSlotsForDay.map((block) => ({
+                    start: block.startTime,
+                    end: block.endTime,
+                })),
+                ...daySchedule.map((task) => ({
+                    start: task.startTime,
+                    end: task.endTime,
+                })),
+            ];
+
+            // Sort all slots by start time to properly calculate free slots
+            allSlots.sort((a, b) => a.start.localeCompare(b.start));
+
+            // Calculate free slots
+            freeTimeSlots[day] = [];
+            let currentTime = FULL_DAY.start;
+            allSlots.forEach((slot) => {
+                if (currentTime < slot.start) {
+                    freeTimeSlots[day].push({
+                        start: currentTime,
+                        end: slot.start,
+                    });
+                }
+                currentTime = slot.end > currentTime ? slot.end : currentTime;
+            });
+            if (currentTime < FULL_DAY.end) {
+                freeTimeSlots[day].push({
+                    start: currentTime,
+                    end: FULL_DAY.end,
+                });
+            }
+        });
+
+        return freeTimeSlots;
+    },
 };
 
 module.exports = helpers;
