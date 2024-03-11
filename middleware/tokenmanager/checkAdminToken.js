@@ -7,7 +7,7 @@ module.exports = async function AuthenticateAccessToken(req, res, next) {
     if (!token) {
         return res.status(401).json({
             status: false,
-            error: "No access token provided.",
+            message: "No access token provided.",
         });
     }
     let session = await helpers.get_data_list("*", "sessions", {
@@ -17,7 +17,7 @@ module.exports = async function AuthenticateAccessToken(req, res, next) {
     if (session.length == 0) {
         return res.status(401).json({
             status: false,
-            error: "Invalid access token.",
+            message: "Invalid access token.",
         });
     }
 
@@ -26,18 +26,18 @@ module.exports = async function AuthenticateAccessToken(req, res, next) {
             if (err.message === "jwt expired") {
                 res.status(401).json({
                     status: false,
-                    error: "Token Expired Please Login.",
+                    message: "Token Expired Please Login.",
                 });
             } else {
                 res.status(500).json({
                     status: false,
-                    error: "Unable To Validate Token",
+                    message: "Unable To Validate Token",
                 });
             }
         } else if (user.role !== "admin") {
             res.status(403).json({
                 status: false,
-                error: "Forbidden access to this route.",
+                message: "Forbidden access to this route.",
             });
         } else {
             req.user = user;
