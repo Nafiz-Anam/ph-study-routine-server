@@ -5,14 +5,9 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Copy package.json and package-lock.json (or yarn.lock) files
-# COPY package*.json ./
-# If you're using Yarn, you might also need to copy yarn.lock file
 COPY package.json yarn.lock ./
 
 # Install dependencies
-# For npm users:
-# RUN npm install
-# For Yarn users:
 RUN yarn install
 
 # Copy the rest of your app's source code from your host to your image filesystem.
