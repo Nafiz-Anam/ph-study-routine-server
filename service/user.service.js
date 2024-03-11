@@ -49,7 +49,7 @@ const UserService = {
         try {
             const existingNeeds = await UserNeed.findOne({ userId });
             if (existingNeeds) {
-                existingNeeds.needs = needs;
+                existingNeeds.todo = needs;
                 await existingNeeds.save();
                 return {
                     message: "Needs updated successfully.",
@@ -60,7 +60,7 @@ const UserService = {
                 await newNeeds.save();
                 return {
                     message: "Needs added successfully.",
-                    needs: newNeeds.needs,
+                    needs: newNeeds.todo,
                 };
             }
         } catch (error) {
