@@ -85,7 +85,7 @@ const UserService = {
             const blockedTimeSlots = await UserSchedule.findOne({
                 userId,
             }).lean();
-            console.log(blockedTimeSlots);
+
             if (!blockedTimeSlots) {
                 throw new Error("User's schedule not found");
             }
