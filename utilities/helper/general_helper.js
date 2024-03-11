@@ -1,25 +1,3 @@
-const fullDayInMinutes = 24 * 60; // 1440 minutes in a day
-
-// Function to convert HH:MM time to minutes
-const timeToMinutes = (time) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
-};
-
-// Function to convert minutes back to HH:MM format
-const minutesToTime = (minutes) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, "0")}:${mins
-        .toString()
-        .padStart(2, "0")}`;
-};
-
-// Initial structure for a day's full availability before subtracting blocked slots
-const getInitialDayAvailability = () => [
-    { start: 0, end: fullDayInMinutes - 1 },
-];
-
 function subtractTimeSlots(availableSlots, blockedSlots) {
     let resultSlots = [...availableSlots]; // Clone to avoid mutating the original
 
@@ -72,23 +50,6 @@ function incrementTimeByMinutes(time, minutesToAdd) {
     return `${HH}:${MM}`;
 }
 
-function initializeStudyPlanWithEmptyDays() {
-    const daysOfWeek = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ];
-    let studyPlan = {};
-    daysOfWeek.forEach((day) => {
-        studyPlan[day] = []; // Initialize each day with an empty array
-    });
-    return studyPlan;
-}
-
 function initializeStudyPlanWithEmptyDaysAndUnallocatedSlot() {
     const daysOfWeek = [
         "Monday",
@@ -135,74 +96,9 @@ function initializeTasksPerDayCount() {
     };
 }
 
-// const subtractTimeSlots = (availableSlots, blockedSlots) => {
-//     blockedSlots.forEach((blocked) => {
-//         const blockedStart = timeToMinutes(blocked.startTime);
-//         const blockedEnd = timeToMinutes(blocked.endTime);
-
-//         for (let i = 0; i < availableSlots.length; i++) {
-//             const slot = availableSlots[i];
-
-//             // If blocked slot overlaps with available slot
-//             if (blockedStart <= slot.end && blockedEnd >= slot.start) {
-//                 // Remove the current slot and potentially add up to two new slots
-//                 availableSlots.splice(i, 1);
-//                 i--; // Adjust index since we're removing an item
-
-//                 // Add new slot before the blocked time, if applicable
-//                 if (slot.start < blockedStart) {
-//                     availableSlots.splice(i + 1, 0, {
-//                         start: slot.start,
-//                         end: blockedStart - 1,
-//                     });
-//                     i++;
-//                 }
-
-//                 // Add new slot after the blocked time, if applicable
-//                 if (slot.end > blockedEnd) {
-//                     availableSlots.splice(i + 1, 0, {
-//                         start: blockedEnd + 1,
-//                         end: slot.end,
-//                     });
-//                     i++;
-//                 }
-//             }
-//         }
-//     });
-
-//     // Convert slots back to HH:MM format for start and end times
-//     return availableSlots.map((slot) => ({
-//         start: minutesToTime(slot.start),
-//         end: minutesToTime(slot.end),
-//     }));
-// };
-
 const FULL_DAY = { start: "00:00", end: "23:59" };
 
 var helpers = {
-    // calculateAvailableTimeSlots: (blockedTimeSlots) => {
-    //     // Initialize with full day available for each day of the week
-    //     let availableTimeSlots = {
-    //         Monday: [{ start: "00:00", end: "23:59" }],
-    //         Tuesday: [{ start: "00:00", end: "23:59" }],
-    //         Wednesday: [{ start: "00:00", end: "23:59" }],
-    //         Thursday: [{ start: "00:00", end: "23:59" }],
-    //         Friday: [{ start: "00:00", end: "23:59" }],
-    //         Saturday: [{ start: "00:00", end: "23:59" }],
-    //         Sunday: [{ start: "00:00", end: "23:59" }],
-    //     };
-
-    //     blockedTimeSlots.weeklySchedule.forEach((daySchedule) => {
-    //         if (daySchedule.timeBlocks.length > 0) {
-    //             availableTimeSlots[daySchedule.day] = subtractTimeSlots(
-    //                 availableTimeSlots[daySchedule.day],
-    //                 daySchedule.timeBlocks
-    //             );
-    //         }
-    //     });
-
-    //     return availableTimeSlots;
-    // },
     calculateAvailableTimeSlots: (blockedTimeSlots) => {
         let availableTimeSlots = {
             Monday: [FULL_DAY],
@@ -272,7 +168,6 @@ var helpers = {
 
     allocateTasksToTimeSlots: (availableTimeSlots, sortedTasks) => {
         let studyPlan = initializeStudyPlanWithEmptyDaysAndUnallocatedSlot();
-        // let sortedTasks = sortTasks(tasks);
 
         // Track number of tasks assigned per day to ensure even distribution
         let tasksPerDayCount = initializeTasksPerDayCount();
@@ -307,46 +202,6 @@ var helpers = {
 
         return studyPlan;
     },
-
-    // allocateTasksToTimeSlots: (availableTimeSlots, tasks) => {
-    //     let studyPlan = {};
-
-    //     tasks.forEach((task) => {
-    //         for (let day in availableTimeSlots) {
-    //             let dayPlan = availableTimeSlots[day];
-
-    //             for (let i = 0; i < dayPlan.length; i++) {
-    //                 let slot = dayPlan[i];
-    //                 let slotDuration = calculateDurationInMinutes(
-    //                     slot.start,
-    //                     slot.end
-    //                 );
-
-    //                 if (slotDuration >= task.timeNeeded) {
-    //                     if (!studyPlan[day]) studyPlan[day] = [];
-    //                     studyPlan[day].push({
-    //                         ...task,
-    //                         startTime: slot.start,
-    //                         endTime: incrementTimeByMinutes(
-    //                             slot.start,
-    //                             task.timeNeeded
-    //                         ),
-    //                     });
-
-    //                     // Adjust the start time of the current slot to after the task
-    //                     slot.start = incrementTimeByMinutes(
-    //                         slot.start,
-    //                         task.timeNeeded
-    //                     );
-
-    //                     // Break out of the loop once the task is allocated
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //     });
-
-    //     return studyPlan;
-    // },
 };
+
 module.exports = helpers;
