@@ -8,20 +8,21 @@ var UserController = {
         try {
             const { f_name, l_name, mobile, education_level, institution } =
                 req.body;
-            const userId = req.user.id;
+            const userId = req?.user?.id;
 
             if (
-                !req.file &&
-                !req.all_files?.profilePicture &&
-                !req.body.profilePicture
+                !req?.file &&
+                !req?.all_files?.profilePicture &&
+                !req?.body?.profilePicture
             ) {
-                return res
-                    .status(400)
-                    .json({ message: "Profile image is required." });
+                return res.status(400).json({
+                    status: false,
+                    message: "Profile image is required.",
+                });
             }
 
             const profilePicturePath = req?.all_files?.profilePicture
-                ? `${static_url}user/${req.all_files.profilePicture}`
+                ? `${static_url}user/${req?.all_files?.profilePicture}`
                 : "";
 
             let data = {
@@ -40,82 +41,113 @@ var UserController = {
             await UserService.update(userId, data);
 
             res.status(201).json({
-                message: "Profile updated successfully",
+                status: true,
+                message: "Profile updated successfully.",
             });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            // console.log(error);
+            res.status(500).json({
+                status: false,
+                message: error?.message || "Internal server error!",
+            });
         }
     },
 
     details: async (req, res, next) => {
         try {
-            const userId = req.body.userId || req.user.id;
+            const userId = req?.body?.userId || req?.user?.id;
 
             if (!userId) {
                 return res
                     .status(400)
-                    .json({ message: "User ID is required." });
+                    .json({ status: false, message: "User ID is required." });
             }
 
             const userDetails = await UserService.details(userId);
 
-            res.json({
-                message: "Detailed profile fetched successfully",
-                profile: userDetails,
+            res.status(201).json({
+                status: true,
+                message: "User Profile fetched successfully.",
+                data: userDetails,
             });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            // console.log(error);
+            res.status(500).json({
+                status: false,
+                message: error?.message || "Internal server error!",
+            });
         }
     },
 
     addNeeds: async (req, res, next) => {
         try {
-            const userId = req.user.id;
-            const { needs } = req.body;
+            const userId = req?.user?.id;
+            const { todo } = req?.body;
 
-            if (!needs || needs.length === 0) {
-                return res.status(400).json({ message: "Needs are required." });
+            if (!todo || todo.length === 0) {
+                return res
+                    .status(400)
+                    .json({ status: false, message: "Needs are required." });
             }
 
-            const result = await UserService.addOrUpdateUserNeeds(
-                userId,
-                needs
-            );
-            res.status(201).json(result);
+            await UserService.addOrUpdateUserNeeds(userId, todo);
+
+            res.status(201).json({
+                status: true,
+                message: "Todo tasks added successfully.",
+            });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            // console.log(error);
+            res.status(500).json({
+                status: false,
+                message: error?.message || "Internal server error!",
+            });
         }
     },
 
     incompleteTasks: async (req, res, next) => {
         try {
-            const userId = req.user.id;
+            const userId = req?.user?.id;
 
             const incompleteTasks = await UserService.getNeedsByUserId(userId);
 
             if (!incompleteTasks) {
                 return res.status(404).json({
-                    message: "No incomplete tasks found for this user.",
+                    status: false,
+                    message: "No todo tasks found for this user.",
                 });
             }
 
-            res.status(200).json(incompleteTasks);
+            res.status(201).json({
+                status: true,
+                message: "Todo tasks fetched successfully.",
+                data: incompleteTasks,
+            });
         } catch (error) {
-            res.status(400).send(error.message);
+            // console.log(error);
+            res.status(500).json({
+                status: false,
+                message: error?.message || "Internal server error!",
+            });
         }
     },
 
     generateStudyPlanForUser: async (req, res, next) => {
         try {
-            const userId = req.user.id;
+            const userId = req?.user?.id;
             const studyPlan = await UserService.generateStudyPlanForUser(
                 userId
             );
 
-            res.json({ studyPlan });
+            res.status(201).json({
+                status: true,
+                message: "Study plan generated successfully.",
+                data: studyPlan,
+            });
         } catch (error) {
-            console.error(error);
+            // console.log(error);
             res.status(500).json({
+                status: false,
                 message: "Failed to generate study plan.",
             });
         }

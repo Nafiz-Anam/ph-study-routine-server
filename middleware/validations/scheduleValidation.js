@@ -37,11 +37,11 @@ const scheduleValidation = {
                 .unique((a, b) => a.day === b.day);
 
             const { error } = weeklyScheduleSchema.validate(
-                req.body.weeklySchedule,
+                req?.body?.weeklySchedule,
                 { abortEarly: false }
             );
 
-            const days = req.body.weeklySchedule.map(
+            const days = req?.body?.weeklySchedule.map(
                 (schedule) => schedule.day
             );
             const missingDays = validDaysOfWeek.filter(
@@ -51,29 +51,30 @@ const scheduleValidation = {
             if (missingDays.length > 0) {
                 return res.status(400).json({
                     status: false,
-                    error: `Missing schedules for: ${missingDays.join(", ")}`,
+                    message: `Missing schedules for: ${missingDays.join(", ")}`,
                 });
             }
 
             if (error) {
-                const missingDayIndex = error.details[0].path[0];
-                const missingDay = req.body.weeklySchedule[missingDayIndex].day;
+                const missingDayIndex = error?.details[0]?.path[0];
+                const missingDay =
+                    req?.body?.weeklySchedule[missingDayIndex]?.day;
                 const errorMessage = `Missing time blocks for ${missingDay}`;
                 return res.status(400).json({
                     status: false,
-                    error: errorMessage,
+                    message: errorMessage,
                 });
             }
 
             next();
         } catch (error) {
-            console.error(
-                "An error occurred during schedule validation:",
-                error
-            );
+            // console.error(
+            //     "An error occurred during schedule validation:",
+            //     error
+            // );
             res.status(500).json({
                 status: false,
-                error: "Internal server error",
+                message: "Internal server error",
             });
         }
     },

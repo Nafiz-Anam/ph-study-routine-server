@@ -72,7 +72,7 @@ const UserService = {
         try {
             const needs = await UserNeed.find({ userId }).select("-__v");
             if (!needs) {
-                throw new Error("Needs not found");
+                throw new Error("Todo tasks not found");
             }
             return needs[0];
         } catch (error) {
@@ -101,7 +101,7 @@ const UserService = {
 
             // Sort tasks by priority and duration
             const sortedTasks = helpers.sortTasksByPriorityAndDuration(
-                tasks[0].needs
+                tasks[0].todo
             );
 
             // Allocate tasks to available time slots and generate the study plan

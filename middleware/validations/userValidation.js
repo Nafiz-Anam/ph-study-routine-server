@@ -57,14 +57,14 @@ const userValidation = {
                 }),
         });
 
-        const { error } = updateProfileSchema.validate(req.body, {
+        const { error } = updateProfileSchema.validate(req?.body, {
             abortEarly: false,
         });
         if (error) {
-            const messages = error.details
-                .map((detail) => detail.message)
+            const messages = error?.details
+                .map((detail) => detail?.message)
                 .join(", ");
-            return res.status(400).json({ message: messages });
+            return res.status(400).json({ status: false, message: messages });
         }
         next();
     },
@@ -93,23 +93,23 @@ const userValidation = {
         });
 
         const payloadSchema = Joi.object({
-            needs: Joi.array()
+            todo: Joi.array()
                 .items(studyNeedSchema)
                 .required()
                 .min(1)
                 .messages({
-                    "array.base": `"needs" should be an array.`,
-                    "array.min": `"needs" must contain at least 1 item.`,
-                    "any.required": `"needs" is a required field.`,
+                    "array.base": `"todo" should be an array.`,
+                    "array.min": `"todo" must contain at least 1 item.`,
+                    "any.required": `"todo" is a required field.`,
                 }),
         });
 
-        const { error } = payloadSchema.validate(req.body);
+        const { error } = payloadSchema.validate(req?.body);
         if (error) {
             return res.status(400).json({
-                status: "error",
-                message: error.details
-                    .map((detail) => detail.message)
+                status: false,
+                message: error?.details
+                    .map((detail) => detail?.message)
                     .join(", "),
             });
         }

@@ -20,7 +20,7 @@ const ScheduleService = {
     },
 
     getWeeklyScheduleByUserId: async (userId) => {
-        const schedule = await UserSchedule.findOne({ userId });
+        const schedule = await UserSchedule.findOne({ userId }).select("-__v");
         return schedule;
     },
 

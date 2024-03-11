@@ -5,41 +5,57 @@ const generateAuthToken = require("../middleware/tokenmanager/token");
 var AuthController = {
     registration: async (req, res, next) => {
         try {
-            const { email, password } = req.body;
+            const { email, password } = req?.body;
             const { user, token } = await AuthService.registerNewUser({
                 email,
                 password,
             });
 
             const userResponse = {
-                id: user._id,
-                email: user.email,
+                id: user?._id,
+                email: user?.email,
                 token,
             };
 
-            res.status(201).send(userResponse);
+            res.status(201).json({
+                status: true,
+                message: "User signed up successfully.",
+                data: userResponse,
+            });
         } catch (error) {
-            res.status(400).send(error.message);
+            // console.log(error);
+            res.status(500).json({
+                status: false,
+                message: error?.message || "Internal server error!",
+            });
         }
     },
 
     login: async (req, res, next) => {
         try {
-            const { email, password } = req.body;
+            const { email, password } = req?.body;
             const { user, token } = await AuthService.loginUser(
                 email,
                 password
             );
 
             const userResponse = {
-                id: user._id,
-                name: user.name,
+                id: user?._id,
+                name: user?.name,
                 token,
             };
 
-            res.send(userResponse);
+            res.status(201).json({
+                status: true,
+                message: "User signed in successfully.",
+                data: userResponse,
+            });
         } catch (error) {
-            res.status(400).send({ error: error.message });
+            // console.log(error);
+            res.status(500).json({
+                status: false,
+                message: error?.message || "Internal server error!",
+            });
         }
     },
 

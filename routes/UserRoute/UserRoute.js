@@ -17,14 +17,14 @@ router.put(
 router.get("/profile", checkPermission, UserController.details);
 
 router.post(
-    "/needs",
+    "/todo",
     checkUserToken,
     userValidation.addNeeds,
     UserController.addNeeds
 );
 
 router.get(
-    "/needs",
+    "/todo",
     checkUserToken,
     UserController.incompleteTasks
 );

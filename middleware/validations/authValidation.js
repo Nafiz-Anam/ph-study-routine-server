@@ -3,12 +3,6 @@ const Joi = require("joi");
 const authValidation = {
     register: async (req, res, next) => {
         const registerSchema = Joi.object({
-            // name: Joi.string().required().min(3).max(50).messages({
-            //     "any.required": "Name is required",
-            //     "string.empty": "Name cannot be empty",
-            //     "string.min": "Name must be at least 3 characters long",
-            //     "string.max": "Name cannot exceed 50 characters",
-            // }),
             email: Joi.string().required().email().messages({
                 "any.required": "Email is required",
                 "string.email": "Email must be a valid email address",
@@ -23,19 +17,19 @@ const authValidation = {
         });
 
         try {
-            const result = registerSchema.validate(req.body);
+            const result = registerSchema.validate(req?.body);
             if (result.error) {
                 return res.status(400).json({
                     status: false,
-                    error: result.error.message,
+                    message: result?.error?.message,
                 });
             }
             next();
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             res.status(500).json({
                 status: false,
-                error: "Server side error!",
+                message: "Server side error!",
             });
         }
     },
@@ -56,19 +50,19 @@ const authValidation = {
         });
 
         try {
-            const result = loginSchema.validate(req.body);
+            const result = loginSchema.validate(req?.body);
             if (result.error) {
                 return res.status(400).json({
                     status: false,
-                    error: result.error.message,
+                    message: result?.error?.message,
                 });
             }
             next();
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             res.status(500).json({
                 status: false,
-                error: "Server side error!",
+                message: "Server side error!",
             });
         }
     },
@@ -82,11 +76,11 @@ const authValidation = {
             }),
         });
 
-        const { error } = passwordResetRequestValidation.validate(req.body);
+        const { error } = passwordResetRequestValidation.validate(req?.body);
         if (error) {
             return res
                 .status(400)
-                .json({ status: false, error: error.details[0].message });
+                .json({ status: false, message: error?.details[0]?.message });
         }
         next();
     },
@@ -112,7 +106,7 @@ const authValidation = {
         if (error) {
             return res
                 .status(400)
-                .json({ status: false, error: error.details[0].message });
+                .json({ status: false, message: error?.details[0]?.message });
         }
         next();
     },

@@ -20,7 +20,7 @@ const UserNeedsSchema = new Schema({
         ref: "User",
         required: true,
     },
-    needs: [NeedSchema],
+    todo: [NeedSchema],
 });
 
 module.exports = mongoose.model("UserNeed", UserNeedsSchema);

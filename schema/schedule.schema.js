@@ -16,7 +16,6 @@ const timeBlockSchema = new mongoose.Schema(
             required: true,
         },
         subject: String, // Optional, mainly useful for 'class' reason
-        // location: String, // Optional, can be used for any reason
     },
     { _id: false }
 ); // Prevents mongoose from creating a separate _id for sub-documents

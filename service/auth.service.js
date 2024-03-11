@@ -13,7 +13,7 @@ const AuthService = {
                 id: savedUser._id,
                 role: savedUser.role,
             };
-            const token = await generateAuthToken(tokenPayload);
+            const token = generateAuthToken(tokenPayload);
 
             return { user, token };
         } catch (error) {
