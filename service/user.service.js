@@ -119,7 +119,7 @@ const UserService = {
 
             return studyPlan;
         } catch (error) {
-            console.error("Failed to generate study plan:", error);
+            // console.error("Failed to generate study plan:", error);
             throw error;
         }
     },

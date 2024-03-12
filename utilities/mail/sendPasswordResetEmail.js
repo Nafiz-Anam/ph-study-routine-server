@@ -28,7 +28,7 @@ const sendPasswordResetEmail = async (toEmail, resetToken) => {
             return true;
         })
         .catch((error) => {
-            console.log(error);
+            // console.log(error);
             return false;
         });
 };
