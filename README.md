@@ -64,14 +64,47 @@ This algorithm ensures a balanced and realistic study schedule, accommodating ex
 
 ## Usage Instructions
 
-1. **Clone the repository**: `git clone https://github.com/Nafiz-Anam/ph-study-planner`
+### Start with yarn or npm
+
+1. **Clone the repository**:
+
+    ```bash
+    git clone https://github.com/Nafiz-Anam/ph-study-planner
+    ```
+
 2. **Install dependencies**:
-    - Backend: `cd server && npm install`
-    - Frontend: `cd client && npm install`
+    - Backend:
+    ```bash
+    cd server && npm install
+    ```
+    - Frontend:
+    ```bash
+    cd client && npm install
+    ```
 3. **Start the application**:
     - Backend: `npm start` within the `/server` directory.
     - Frontend: `npm run dev` within the `/client` directory.
 4. **Access the application**: Open `http://localhost:3000` in your web browser for **frontend**. And `http://localhost:5000/api/v1` for **backend**.
+
+### Start with Docker
+
+-   Clone repo:
+
+    ```bash
+    git clone https://github.com/Nafiz-Anam/ph-study-planner
+    ```
+
+-   Run Docker compose build command
+
+    ```bash
+    docker compose build  --no-cache
+    ```
+
+-   Run Docker compose up command:
+
+    ```bash
+    docker-compose up
+    ```
 
 ## API Collection 👇
 
