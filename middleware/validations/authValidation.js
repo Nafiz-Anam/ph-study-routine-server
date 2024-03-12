@@ -37,7 +37,7 @@ const authValidation = {
             // console.log(error);
             res.status(500).json({
                 status: false,
-                message: "Server side error!",
+                message: "Internal server error!",
             });
         }
     },
@@ -70,7 +70,7 @@ const authValidation = {
             // console.log(error);
             res.status(500).json({
                 status: false,
-                message: "Server side error!",
+                message: "Internal server error!",
             });
         }
     },
