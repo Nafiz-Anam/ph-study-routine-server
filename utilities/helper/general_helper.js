@@ -1,3 +1,5 @@
+const userSchema = require("../../schema/user.schema");
+
 function subtractTimeSlots(availableSlots, blockedSlots) {
     let resultSlots = [...availableSlots]; // Clone to avoid mutating the original
 
@@ -259,6 +261,16 @@ var helpers = {
         });
 
         return freeTimeSlots;
+    },
+
+    userAvailable: async (email) => {
+        const user = await userSchema.findOne({ email });
+
+        if (user) {
+            return true;
+        } else {
+            return false;
+        }
     },
 };
 

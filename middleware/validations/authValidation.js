@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const helpers = require("../../utilities/helper/general_helper");
 
 const authValidation = {
     register: async (req, res, next) => {
@@ -18,10 +19,17 @@ const authValidation = {
 
         try {
             const result = registerSchema.validate(req?.body);
+            const userAvailable = await helpers.userAvailable(req?.body?.email);
             if (result.error) {
                 return res.status(400).json({
                     status: false,
                     message: result?.error?.message,
+                });
+            }
+            if (userAvailable) {
+                return res.status(500).json({
+                    status: false,
+                    message: "Email already signed up. Sign in to continue.",
                 });
             }
             next();
